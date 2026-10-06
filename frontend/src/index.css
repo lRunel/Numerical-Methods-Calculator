@@ -130,8 +130,8 @@ body {
 
 /* Action Buttons */
 .btn-enterprise-primary {
-  background: #1f2937;
-  color: var(--text-main);
+  background: var(--sky-blue);
+  color: #ffffff;
   font-weight: 600;
   border: none;
   border-radius: 16px;
@@ -142,17 +142,17 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(31, 41, 55, 0.2);
+  box-shadow: 0 4px 12px rgba(205, 155, 240, 0.3);
 }
 
 .btn-enterprise-primary:hover {
-  background: #111827;
-  box-shadow: 0 6px 16px rgba(31, 41, 55, 0.3);
+  background: var(--indigo-accent);
+  box-shadow: 0 6px 16px rgba(196, 130, 249, 0.4);
   transform: translateY(-1px);
 }
 
 .btn-enterprise-secondary {
-  background: #cd9bf0;
+  background: #f8fafc;
   color: var(--text-main);
   border: 2px solid var(--border-slate);
   font-weight: 600;
@@ -167,7 +167,7 @@ body {
 }
 
 .btn-enterprise-secondary:hover {
-  background: #c482f9;
+  background: #f1f5f9;
   color: var(--text-main);
   border-color: transparent;
 }

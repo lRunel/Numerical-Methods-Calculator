@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MethodCard from './components/MethodCard';
 import MathKeyboard, { EXPR_KEYS } from './components/MathKeyboard';
-import { syllabusExamples } from './data/syllabusExamples';
+import { methodMetadata } from './data/methodMetadata';
 import { Binary, LineChart, Sigma, Gauge, Grid, ChevronRight } from 'lucide-react';
 
 const MODULES = [
@@ -74,7 +74,7 @@ export default function App() {
 
   const activeModule = MODULES.find(m => m.id === activeModuleId);
   const activeMethod = activeModule.methods.find(m => m.key === activeMethodKey) || activeModule.methods[0];
-  const hasExpressionInput = EXPR_KEYS.some(k => k in (syllabusExamples[activeMethod.key] || {}));
+  const hasExpressionInput = EXPR_KEYS.some(k => k in (methodMetadata[activeMethod.key]?.inputs || {}));
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-slate)' }}>

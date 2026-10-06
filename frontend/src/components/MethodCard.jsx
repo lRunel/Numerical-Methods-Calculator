@@ -5,7 +5,7 @@ import MatrixInput from './MatrixInput';
 import HeatmapGrid from './HeatmapGrid';
 import { EXPR_KEYS } from './MathKeyboard';
 import { methodMetadata } from '../data/methodMetadata';
-import { syllabusExamples } from '../data/syllabusExamples';
+
 
 export default function MethodCard({ methodKey, precision }) {
   const meta = methodMetadata[methodKey] || {};
@@ -22,8 +22,11 @@ export default function MethodCard({ methodKey, precision }) {
   }, [methodKey]);
 
   const loadDefaults = () => {
-    if (syllabusExamples[methodKey]) {
-      const { formulaLatex, description, ...inputs } = syllabusExamples[methodKey];
+    if (methodMetadata[methodKey]?.inputs) {
+      const inputs = {};
+      Object.entries(methodMetadata[methodKey].inputs).forEach(([key, val]) => {
+        inputs[key] = val.default;
+      });
       setFormData(JSON.parse(JSON.stringify(inputs)));
       setResult(null);
       setError(null);
@@ -94,9 +97,7 @@ export default function MethodCard({ methodKey, precision }) {
             </p>
           </div>
           
-          <button onClick={loadDefaults} className="btn-enterprise-secondary">
-            <BookOpen size={14} color="var(--sky-blue)" /> Load Syllabus Example
-          </button>
+
         </div>
 
         {/* Mathematical Formula Card */}
