@@ -9,8 +9,7 @@ import { methodMetadata } from '../data/methodMetadata';
 
 export default function MethodCard({ methodKey, precision }) {
   const meta = methodMetadata[methodKey] || {};
-  const example = syllabusExamples[methodKey] || {};
-
+  
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
