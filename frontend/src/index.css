@@ -1,0 +1,365 @@
+@import "katex/dist/katex.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-slate: #f4f6f8;
+  --card-slate: #ffffff;
+  --card-hover: #fafafa;
+  --border-slate: #e5e7eb;
+  --border-bright: #d1d5db;
+  
+  --sky-blue: #cd9bf0;
+  --indigo-accent: #c482f9;
+  --emerald-accent: #34d399;
+  --rose-accent: #fb7185;
+  --amber-accent: #fbbf24;
+  
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+  
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-slate);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* Typography & Code */
+.font-mono {
+  font-family: 'Fira Code', 'JetBrains Mono', monospace !important;
+}
+
+/* Enterprise Container Panel */
+.enterprise-card {
+  background: var(--card-slate);
+  border: 2px solid var(--border-slate);
+  border-radius: 24px;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.05);
+}
+
+/* Enterprise Header Topbar */
+.enterprise-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-slate);
+  padding: 12px 24px;
+}
+
+/* Form Controls & Helper Guides */
+.field-card {
+  background: #ffffff;
+  border: 2px solid var(--border-slate);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.field-card:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 4px rgba(205, 155, 240, 0.2);
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-label-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-symbol-badge {
+  background: #f3e8ff;
+  color: var(--text-main);
+  border: 1px solid #e9d5ff;
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.field-explanation {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border-left: 4px solid var(--sky-blue);
+}
+
+.input-field-ent {
+  background: #ffffff;
+  border: 2px solid var(--border-slate);
+  color: var(--text-main);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  width: 100%;
+}
+
+.input-field-ent:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 4px rgba(205, 155, 240, 0.2);
+}
+
+/* Action Buttons */
+.btn-enterprise-primary {
+  background: #1f2937;
+  color: var(--text-main);
+  font-weight: 600;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(31, 41, 55, 0.2);
+}
+
+.btn-enterprise-primary:hover {
+  background: #111827;
+  box-shadow: 0 6px 16px rgba(31, 41, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-enterprise-secondary {
+  background: #cd9bf0;
+  color: var(--text-main);
+  border: 2px solid var(--border-slate);
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-enterprise-secondary:hover {
+  background: #c482f9;
+  color: var(--text-main);
+  border-color: transparent;
+}
+
+/* Info Callout Banners */
+.info-callout {
+  background: #f3e8ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  color: var(--text-main);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.interpretation-card {
+  background: #fdf2f8;
+  border: 2px solid #fbcfe8;
+  border-radius: 16px;
+  padding: 16px 20px;
+  color: var(--text-main);
+}
+
+/* HIGHLY STYLISH DATA TABLES WITH CRISP GRID LINES & ZEBRA STRIPING */
+.enterprise-table-container {
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.enterprise-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+}
+
+.enterprise-table th {
+  background: #f8fafc;
+  color: var(--text-main);
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border-bright);
+  border-right: 1px solid var(--border-slate);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.enterprise-table th:last-child {
+  border-right: none;
+}
+
+.enterprise-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-slate);
+  border-right: 1px solid var(--border-slate);
+  color: var(--text-main);
+}
+
+.enterprise-table td:last-child {
+  border-right: none;
+}
+
+/* Alternate Zebra Row Color */
+.enterprise-table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.enterprise-table tbody tr:nth-child(odd) {
+  background-color: var(--text-main);
+}
+
+.enterprise-table tbody tr:hover td {
+  background-color: #f3e8ff !important;
+  color: var(--text-main);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-slate);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Math keyboard (right-hand side panel) */
+.math-keyboard {
+  position: sticky;
+  top: 24px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.math-keyboard-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.math-keyboard-status {
+  font-size: 11px;
+  color: var(--text-subtle);
+  background: #f8fafc;
+  border-left: 3px solid var(--border-bright);
+  border-radius: 4px;
+  padding: 6px 10px;
+  line-height: 1.4;
+}
+
+.math-keyboard-status.active {
+  color: var(--text-main);
+  border-left-color: var(--sky-blue);
+}
+
+.math-keyboard-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-subtle);
+  margin-bottom: 5px;
+}
+
+.math-keyboard-grid {
+  display: grid;
+  gap: 4px;
+}
+
+.math-keyboard-edit {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.mk-key {
+  background: #ffffff;
+  color: var(--text-main);
+  border: 2px solid var(--border-slate);
+  border-radius: 5px;
+  padding: 7px 2px;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+}
+
+.mk-key:hover:not(:disabled) {
+  background: #f3e8ff;
+  border-color: transparent;
+  color: var(--text-main);
+}
+
+.mk-key:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.mk-key:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mk-key-pad {
+  font-weight: 600;
+  padding: 9px 2px;
+}
+
+.mk-key-util {
+  color: var(--sky-blue);
+}
