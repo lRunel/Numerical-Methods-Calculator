@@ -79,30 +79,32 @@ const PAD_KEYS = [
 // Insert `text` into a React-controlled input at its cursor. The native value setter
 // plus a bubbling `input` event is what makes React's onChange see the change.
 
+
 function insertAtCursor(input, text) {
   const cursorMarker = text.indexOf('|');
-  const insertText = cursorMarker === -1 ? text : text.replace('|', '');
-  
-  input.focus();
-  document.execCommand('insertText', false, insertText);
-  
-  if (cursorMarker !== -1) {
-    const newPos = input.selectionStart - (insertText.length - cursorMarker);
-    input.setSelectionRange(newPos, newPos);
-  }
+  const insert = cursorMarker === -1 ? text : text.replace('|', '');
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? start;
+  const next = input.value.slice(0, start) + insert + input.value.slice(end);
+  setInputValue(input, next, start + (cursorMarker === -1 ? insert.length : cursorMarker));
 }
 
 function setInputValue(input, value, caret) {
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+  setter.call(input, value);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
   input.focus();
-  input.select();
-  document.execCommand('insertText', false, value);
   input.setSelectionRange(caret, caret);
 }
 
 function backspace(input) {
-  input.focus();
-  document.execCommand('delete', false, null);
+  const start = input.selectionStart ?? 0;
+  const end = input.selectionEnd ?? start;
+  if (start !== end) return setInputValue(input, input.value.slice(0, start) + input.value.slice(end), start);
+  if (start === 0) return;
+  setInputValue(input, input.value.slice(0, start - 1) + input.value.slice(end), start - 1);
 }
+
 
 
 function moveCursor(input, delta) {
@@ -123,13 +125,27 @@ export default function MathKeyboard() {
     return () => document.removeEventListener('focusin', onFocusIn);
   }, []);
 
+
   // The field disappears when the method changes; drop the stale reference.
   const activeTarget = target && target.isConnected ? target : null;
 
+  const getEffectiveTarget = () => {
+    if (activeTarget) return activeTarget;
+    // Fallback to the first expression input in the DOM
+    const firstInput = document.querySelector('input[data-expr]');
+    if (firstInput) {
+      setTarget(firstInput);
+      return firstInput;
+    }
+    return null;
+  };
+
   const run = (action) => (e) => {
     e.preventDefault();
-    if (activeTarget) action(activeTarget);
+    const t = getEffectiveTarget();
+    if (t) action(t);
   };
+
   // Keep focus (and the selection) in the field while a key is pressed.
   const keepFocus = (e) => e.preventDefault();
 
@@ -162,7 +178,7 @@ export default function MathKeyboard() {
                 type="button"
                 className="mk-key"
                 title={k.hint || k.tpl.replace('|', '')}
-                disabled={!activeTarget}
+                disabled={false}
                 onMouseDown={keepFocus}
                 onClick={run((i) => insertAtCursor(i, k.tpl))}
               >
@@ -181,7 +197,7 @@ export default function MathKeyboard() {
               key={k}
               type="button"
               className="mk-key mk-key-pad"
-              disabled={!activeTarget}
+              disabled={false}
               onMouseDown={keepFocus}
               onClick={run((i) => insertAtCursor(i, k))}
             >
