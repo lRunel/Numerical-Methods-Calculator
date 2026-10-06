@@ -3,7 +3,7 @@ import { BookOpen, Play, CheckCircle2, AlertCircle, Info, HelpCircle, Table as T
 import LaTeXViewer from './LaTeXViewer';
 import MatrixInput from './MatrixInput';
 import HeatmapGrid from './HeatmapGrid';
-import { EXPR_KEYS } from './MathKeyboard';
+import { EXPR_KEYS } from '../constants';
 import { methodMetadata } from '../data/methodMetadata';
 
 

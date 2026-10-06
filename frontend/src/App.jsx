@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MethodCard from './components/MethodCard';
-import MathKeyboard, { EXPR_KEYS } from './components/MathKeyboard';
+import MathKeyboard from './components/MathKeyboard';
+import { EXPR_KEYS } from './constants';
 import { methodMetadata } from './data/methodMetadata';
 import { Binary, LineChart, Sigma, Gauge, Grid, ChevronRight } from 'lucide-react';
 

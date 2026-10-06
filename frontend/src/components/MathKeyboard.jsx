@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Keyboard, Delete, ArrowLeft, ArrowRight, Eraser } from 'lucide-react';
 
-// Input keys (from syllabusExamples) that hold a math expression string.
-export const EXPR_KEYS = ['g_expr', 'f_expr', 'P_expr', 'Q_expr', 'R_expr', 'u_ic_str'];
-
-// `|` marks where the cursor lands after inserting a template.
 const KEY_GROUPS = [
   {
     title: 'Calculus',
@@ -76,36 +72,54 @@ const PAD_KEYS = [
   '0', '.', '^', '+',
 ];
 
-// Insert `text` into a React-controlled input at its cursor. The native value setter
-// plus a bubbling `input` event is what makes React's onChange see the change.
-
-
-function insertAtCursor(input, text) {
-  const cursorMarker = text.indexOf('|');
-  const insert = cursorMarker === -1 ? text : text.replace('|', '');
-  const start = input.selectionStart ?? input.value.length;
-  const end = input.selectionEnd ?? start;
-  const next = input.value.slice(0, start) + insert + input.value.slice(end);
-  setInputValue(input, next, start + (cursorMarker === -1 ? insert.length : cursorMarker));
-}
-
 function setInputValue(input, value, caret) {
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-  setter.call(input, value);
+  const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+  if (setter) {
+    setter.call(input, value);
+  } else {
+    input.value = value;
+  }
   input.dispatchEvent(new Event('input', { bubbles: true }));
   input.focus();
-  input.setSelectionRange(caret, caret);
+  if (caret !== undefined && caret !== null) {
+    input.setSelectionRange(caret, caret);
+  }
+}
+
+function insertAtCursor(input, text) {
+  input.focus();
+  const cursorMarker = text.indexOf('|');
+  const insert = cursorMarker === -1 ? text : text.replace('|', '');
+  
+  if (document.execCommand('insertText', false, insert)) {
+    if (cursorMarker !== -1) {
+      const newPos = input.selectionEnd - (insert.length - cursorMarker);
+      input.setSelectionRange(newPos, newPos);
+    }
+  } else {
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    const next = input.value.slice(0, start) + insert + input.value.slice(end);
+    setInputValue(input, next, start + (cursorMarker === -1 ? insert.length : cursorMarker));
+  }
 }
 
 function backspace(input) {
+  input.focus();
   const start = input.selectionStart ?? 0;
   const end = input.selectionEnd ?? start;
-  if (start !== end) return setInputValue(input, input.value.slice(0, start) + input.value.slice(end), start);
+  if (start !== end) {
+    if (!document.execCommand('delete')) {
+      setInputValue(input, input.value.slice(0, start) + input.value.slice(end), start);
+    }
+    return;
+  }
   if (start === 0) return;
-  setInputValue(input, input.value.slice(0, start - 1) + input.value.slice(end), start - 1);
+  input.setSelectionRange(start - 1, start);
+  if (!document.execCommand('delete')) {
+    setInputValue(input, input.value.slice(0, start - 1) + input.value.slice(end), start - 1);
+  }
 }
-
-
 
 function moveCursor(input, delta) {
   const pos = Math.min(Math.max((input.selectionStart ?? 0) + delta, 0), input.value.length);
@@ -116,22 +130,29 @@ function moveCursor(input, delta) {
 export default function MathKeyboard() {
   const [target, setTarget] = useState(null);
 
-  // Track the expression field that was focused last, so keyboard clicks know where to type.
   useEffect(() => {
     const onFocusIn = (e) => {
-      if (e.target instanceof HTMLInputElement && e.target.dataset.expr) setTarget(e.target);
+      if (e.target instanceof HTMLInputElement && e.target.dataset.expr) {
+        setTarget(e.target);
+      }
+    };
+    const onMouseDown = (e) => {
+      if (e.target instanceof HTMLInputElement && e.target.dataset.expr) {
+        setTarget(e.target);
+      }
     };
     document.addEventListener('focusin', onFocusIn);
-    return () => document.removeEventListener('focusin', onFocusIn);
+    document.addEventListener('mousedown', onMouseDown);
+    return () => {
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('mousedown', onMouseDown);
+    };
   }, []);
 
-
-  // The field disappears when the method changes; drop the stale reference.
   const activeTarget = target && target.isConnected ? target : null;
 
   const getEffectiveTarget = () => {
     if (activeTarget) return activeTarget;
-    // Fallback to the first expression input in the DOM
     const firstInput = document.querySelector('input[data-expr]');
     if (firstInput) {
       setTarget(firstInput);
@@ -142,68 +163,73 @@ export default function MathKeyboard() {
 
   const run = (action) => (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const t = getEffectiveTarget();
     if (t) action(t);
   };
 
-  // Keep focus (and the selection) in the field while a key is pressed.
-  const keepFocus = (e) => e.preventDefault();
+  const keepFocus = (e) => {
+    e.preventDefault();
+  };
 
   return (
-    <div className="enterprise-card math-keyboard">
-      <div className="math-keyboard-header">
-        <Keyboard size={16} color="var(--sky-blue)" />
-        <span>Math Keyboard</span>
+    <div className="enterprise-card math-keyboard" style={{ userSelect: 'none' }}>
+      <div className="math-keyboard-header" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-bright)', fontWeight: '700' }}>
+        <Keyboard size={18} color="var(--sky-blue)" />
+        <span style={{ color: 'var(--text-main)' }}>Math Keyboard</span>
       </div>
-      <div className={`math-keyboard-status ${activeTarget ? 'active' : ''}`}>
+      
+      <div style={{ padding: '12px 16px', background: activeTarget ? 'rgba(205, 155, 240, 0.1)' : '#f8fafc', fontSize: '13px', color: activeTarget ? 'var(--indigo-accent)' : 'var(--text-muted)' }}>
         {activeTarget
           ? <>Typing into <strong className="font-mono">{activeTarget.dataset.expr}</strong></>
           : 'Click a function field (f(x), g(x), …) to type into it.'}
       </div>
 
-      <div className="math-keyboard-edit">
-        <button type="button" className="mk-key mk-key-util" title="Move cursor left" onMouseDown={keepFocus} onClick={run((i) => moveCursor(i, -1))}><ArrowLeft size={14} /></button>
-        <button type="button" className="mk-key mk-key-util" title="Move cursor right" onMouseDown={keepFocus} onClick={run((i) => moveCursor(i, 1))}><ArrowRight size={14} /></button>
-        <button type="button" className="mk-key mk-key-util" title="Backspace" onMouseDown={keepFocus} onClick={run(backspace)}><Delete size={14} /></button>
-        <button type="button" className="mk-key mk-key-util" title="Clear field" onMouseDown={keepFocus} onClick={run((i) => setInputValue(i, '', 0))}><Eraser size={14} /></button>
-      </div>
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+          <button type="button" className="btn-enterprise-outline" style={{ flex: 1, padding: '8px' }} title="Move cursor left" onMouseDown={keepFocus} onClick={run((i) => moveCursor(i, -1))}><ArrowLeft size={16} /></button>
+          <button type="button" className="btn-enterprise-outline" style={{ flex: 1, padding: '8px' }} title="Move cursor right" onMouseDown={keepFocus} onClick={run((i) => moveCursor(i, 1))}><ArrowRight size={16} /></button>
+          <button type="button" className="btn-enterprise-outline" style={{ flex: 1, padding: '8px', color: 'var(--rose-accent)', borderColor: '#fca5a5' }} title="Backspace" onMouseDown={keepFocus} onClick={run(backspace)}><Delete size={16} /></button>
+          <button type="button" className="btn-enterprise-outline" style={{ flex: 1, padding: '8px' }} title="Clear field" onMouseDown={keepFocus} onClick={run((i) => setInputValue(i, '', 0))}><Eraser size={16} /></button>
+        </div>
 
-      {KEY_GROUPS.map((group) => (
-        <div key={group.title}>
-          <div className="math-keyboard-group-title">{group.title}</div>
-          <div className="math-keyboard-grid" style={{ gridTemplateColumns: `repeat(${group.cols}, 1fr)` }}>
-            {group.keys.map((k) => (
+        {KEY_GROUPS.map((group) => (
+          <div key={group.title}>
+            <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>{group.title}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${group.cols}, 1fr)`, gap: '6px' }}>
+              {group.keys.map((k) => (
+                <button
+                  key={k.label}
+                  type="button"
+                  className="btn-enterprise-outline"
+                  style={{ padding: '8px 4px', fontSize: '13px', fontFamily: 'var(--font-mono)' }}
+                  title={k.hint || k.tpl.replace('|', '')}
+                  onMouseDown={keepFocus}
+                  onClick={run((i) => insertAtCursor(i, k.tpl))}
+                >
+                  {k.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>Numbers & operators</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            {PAD_KEYS.map((k) => (
               <button
-                key={k.label}
+                key={k}
                 type="button"
-                className="mk-key"
-                title={k.hint || k.tpl.replace('|', '')}
-                disabled={false}
+                className="btn-enterprise-outline"
+                style={{ padding: '12px 4px', fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: '700', background: '#f8fafc' }}
                 onMouseDown={keepFocus}
-                onClick={run((i) => insertAtCursor(i, k.tpl))}
+                onClick={run((i) => insertAtCursor(i, k))}
               >
-                {k.label}
+                {{ '*': '×', '/': '÷', '-': '−' }[k] || k}
               </button>
             ))}
           </div>
-        </div>
-      ))}
-
-      <div>
-        <div className="math-keyboard-group-title">Numbers & operators</div>
-        <div className="math-keyboard-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-          {PAD_KEYS.map((k) => (
-            <button
-              key={k}
-              type="button"
-              className="mk-key mk-key-pad"
-              disabled={false}
-              onMouseDown={keepFocus}
-              onClick={run((i) => insertAtCursor(i, k))}
-            >
-              {{ '*': '×', '/': '÷', '-': '−' }[k] || k}
-            </button>
-          ))}
         </div>
       </div>
     </div>

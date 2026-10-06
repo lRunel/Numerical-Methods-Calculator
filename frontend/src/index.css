@@ -238,11 +238,11 @@ body {
 
 /* Alternate Zebra Row Color */
 .enterprise-table tbody tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: #f8fafc;
 }
 
 .enterprise-table tbody tr:nth-child(odd) {
-  background-color: var(--text-main);
+  background-color: #ffffff;
 }
 
 .enterprise-table tbody tr:hover td {
@@ -362,4 +362,26 @@ body {
 
 .mk-key-util {
   color: var(--sky-blue);
+}
+
+.btn-enterprise-outline {
+  background: #ffffff;
+  color: var(--text-main);
+  border: 2px solid var(--border-slate);
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-enterprise-outline:hover {
+  background: #f3e8ff;
+  border-color: transparent;
+  color: var(--indigo-accent);
+}
+
+.btn-enterprise-outline:active {
+  transform: translateY(1px);
 }
