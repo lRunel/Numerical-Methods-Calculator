@@ -17,5 +17,5 @@ export default function LaTeXViewer({ math, displayMode = true }) {
     }
   }, [math, displayMode]);
 
-  return <div ref={containerRef} style={{ color: '#f0f6fc', overflowX: 'auto', padding: '4px 0' }} />;
+  return <div ref={containerRef} style={{ color: 'var(--text-main)', overflowX: 'auto', padding: '4px 0' }} />;
 }

@@ -78,30 +78,32 @@ const PAD_KEYS = [
 
 // Insert `text` into a React-controlled input at its cursor. The native value setter
 // plus a bubbling `input` event is what makes React's onChange see the change.
+
 function insertAtCursor(input, text) {
   const cursorMarker = text.indexOf('|');
-  const insert = cursorMarker === -1 ? text : text.replace('|', '');
-  const start = input.selectionStart ?? input.value.length;
-  const end = input.selectionEnd ?? start;
-  const next = input.value.slice(0, start) + insert + input.value.slice(end);
-  setInputValue(input, next, start + (cursorMarker === -1 ? insert.length : cursorMarker));
+  const insertText = cursorMarker === -1 ? text : text.replace('|', '');
+  
+  input.focus();
+  document.execCommand('insertText', false, insertText);
+  
+  if (cursorMarker !== -1) {
+    const newPos = input.selectionStart - (insertText.length - cursorMarker);
+    input.setSelectionRange(newPos, newPos);
+  }
 }
 
 function setInputValue(input, value, caret) {
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-  setter.call(input, value);
-  input.dispatchEvent(new Event('input', { bubbles: true }));
   input.focus();
+  input.select();
+  document.execCommand('insertText', false, value);
   input.setSelectionRange(caret, caret);
 }
 
 function backspace(input) {
-  const start = input.selectionStart ?? 0;
-  const end = input.selectionEnd ?? start;
-  if (start !== end) return setInputValue(input, input.value.slice(0, start) + input.value.slice(end), start);
-  if (start === 0) return;
-  setInputValue(input, input.value.slice(0, start - 1) + input.value.slice(end), start - 1);
+  input.focus();
+  document.execCommand('delete', false, null);
 }
+
 
 function moveCursor(input, delta) {
   const pos = Math.min(Math.max((input.selectionStart ?? 0) + delta, 0), input.value.length);
